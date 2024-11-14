@@ -165,13 +165,12 @@ class Plmgr {
         void append_audio(){
             string playlist_name = "", path = "";
             cout<<"Select playlist (by name):";cin>>playlist_name;
-            if (fs::exists("./playlists/"+name+".apl")){
+            if (fs::exists("./playlists/"+playlist_name+".apl")){
                 cout<<"Enter audio path:";cin>>path;
                 if (fs::exists(path)){
-                    ofstream file("./playlists/"+name+".apl", std::ios::app);
+                    ofstream file("./playlists/"+playlist_name+".apl", std::ios::app);
                     file<<path<<endl;
-                    playlists[util_get_index(name)].second.push_back(path);
-                    break;
+                    playlists[util_get_index(playlist_name)].second.push_back(path);
                 } else {
                     cerr<<"This audio path doesn't exist!\n";
                 }
@@ -186,8 +185,11 @@ class Plmgr {
                 string choice = "";
                 cerr<<"Are you sure you want to delete that file (non-revertable)? {y, n}:";cin>>choice;
                 if (choice == "y"){
-                    if (std::filesystem::remove(file_path)){
-                        cout<<"File deleted successfully.\n";
+                    if (fs::remove("./playlists"+playlist_name+".apl")){
+                        cout<<"File deleted successfully.\nReloading playlists...\n";
+                        playlists.clear();
+                        util_loadfiles();
+                        cout<<"Loaded Succesfully\nEnjoy :)\n";
                     } else {
                         cerr<<"Unable to delete the file!\n";
                     }
@@ -198,7 +200,45 @@ class Plmgr {
         }
         //[3]
         void remove_audio(){
-            
+            string playlist_name = "", path = "";
+            cout<<"What playlist to delete from:";cin>>playlist_name;
+            if (fs::exists("./playlists/"+playlist_name+".apl")){
+                //TODO: print available paths.
+                cout<<"Enter the path you want to delete:";cin>>path;
+                if (fs::exists(path)){
+                    //Modifying into a swap file
+                    ifstream file("./playlists/"+playlist_name+".apl");
+                    ofstream file_swap("./playlists/"+playlist_name+".swp.apl");
+                    string line = "";
+                    bool path_exists = 0;
+                    while (getline(file, line)){
+                        if (line != path){
+                            file_swap<<line<<endl;
+                        } else {
+                            path_exists = true;
+                        }
+                    }
+                    file.close();
+                    file_swap.close();
+                    if (path_exists){
+                        //Reopening original as output and swap as input
+                        //Opened in binary mode to preserve lines
+                        ofstream file("./playlists/"+playlist_name+".apl", ios::binary);
+                        ifstream file_swap("./playlists/"+playlist_name+".swp.apl", ios::binary);
+                        file << file_swap.rdbuf();
+                        cout<<"Found and deleted path successfully.\n";
+                        //Reloading playlist
+                        playlists[util_get_index(playlist_name)].second.clear();
+                        util_populate_playlist(util_get_index(playlist_name));
+                    } else {
+                        cerr<<"Path doesn't exist in first place.\n";
+                    }
+                    //Deleting swap
+                    fs::remove("./playlists/"+playlist_name+".swp.apl");
+                }
+            } else {
+                cerr<<"This playlist name doesn't exist!\n";
+            }
         }
         //[4]
         void order(){
@@ -206,25 +246,33 @@ class Plmgr {
         }
         //[5]
         void print_all_pl(){
-
+            for (int i = 0; i < playlists.size(); i++){
+                cout<<'['<<i<<"]: "<<playlists[i].second[0]<<'\n';
+            }
         }
         //[6]
         void print_all_audio(){
-
+            for (int i = 0; i < playlists.size(); i++){
+                cout<<"PLAYLIST: "<<playlists[i].second[0]<<'\n';
+                for (int j = 1; j < playlists[i].second.size(); j++){
+                    cout<<'['<<j - 1<<"]: "<<playlists[i].second[j]<<'\n';
+                }
+            }
         }
         //[7]
         void print_from_pl(){
-
+            string playlist_name = "";
+            cout<<"Enter playlist name:";cin>>playlist_name;
+            int index = util_get_index(playlist_name);
+            if (index >= 0){
+                for (int i = 1; i < playlists[index].second.size(); i++){
+                    cout<<'['<<i<<"]: "<<playlists[index].second[i]<<'\n';
+                }
+            }
         }
         //[8]
         void play(){
-
         }
-        //[10]
-        void load_external(){
-
-        }
-
 };
 
 #endif
