@@ -1,0 +1,52 @@
+@startuml
+!theme plain
+skinparam classAttributeIconSize 0
+struct Node{
+    +prev: Node*
+    +data: string
+    +next: Node*
+}
+hide Node methods
+hide Node circle
+
+class Linked_list{
+    -head: Node*
+    -tail: Node*
+
+    +push_back(): void
+    +pop_back(): void
+    +push_front(): void
+    +pop_front(): void
+    +insert(): void
+    +erase(): void
+    +find(): void
+    +traverse(): void
+    +get_size(): int
+    +clear(): void
+}
+hide Linked_list circle
+
+class Plmgr{
+    -playlists: Linked_list
+    -util_get_index(name: string): int
+    -util_populate_playlist(index: int): void
+    -util_add_to_playlists(path: string, name: string): void
+    -util_load_apl(): void
+    -util_load_folder(): void
+
+    +Plmgr()
+    +append_pl(): void
+    +append_audio(): void
+    +remove_pl(): void
+    +remove_audio(): void
+    +order(): void
+    +print_all_pl(): void
+    +print_all_audio(): void
+    +print_from_pl(): void
+    +play(): void
+}
+hide Plmgr circle
+
+Linked_list -up-* Node
+Linked_list -[hidden]right-> Plmgr
+@enduml

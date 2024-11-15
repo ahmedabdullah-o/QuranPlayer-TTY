@@ -45,7 +45,7 @@ class Plmgr {
             }
         }
 
-        bool util_add_to_playlists (string path, string name){
+        void util_add_to_playlists (string path, string name){
             for (int i = 0; i < playlists.size(); i++){
                 if (name == playlists[i].second[0]){
                     while (true){
@@ -66,7 +66,7 @@ class Plmgr {
                                 break;
                             }
                         } else if (choice == "2"){
-                            return 1;
+                            break;
                         } else {
                             cerr<<"Wrong choice\n";
                         }
@@ -78,10 +78,9 @@ class Plmgr {
             );
             playlists[playlists.size() - 1].second.push_back(name);
             util_populate_playlist(util_get_index(name));
-            return 0;
         }
-
-        void util_load_playlists(){
+        //TODO: make (util_load_apl) work with various paths
+        void util_load_apl(){
             //iterate over files in playlists folder
             for (const auto& entry : fs::directory_iterator("./playlists")) {
                 //check file extension
@@ -108,19 +107,19 @@ class Plmgr {
             }
         }
 
-        void util_loadfiles(){
+        void util_folder(){
             //make sure the playlists folder exists.
             if (fs::exists("./playlists")){
                 cout<<"playlists folder found.\n";
                 //load playlists.
-                util_load_playlists();
+                util_load_apl();
             } else {
                 //init the dir.
                 cerr<<"playlists folder not found.\n";
                 if (fs::create_directory("./playlists")){
                     cout<<"Blank playlists folder created successfully.\n";
                     //load playlists
-                    util_load_playlists();
+                    util_load_apl();
                 } else {
                     throw runtime_error("Unable to create playlists folder!\n");
                 }
@@ -130,7 +129,7 @@ class Plmgr {
     public:
         //Constructor
         Plmgr(){
-            util_loadfiles();
+            util_folder();
         }
         //[1]
         void append_pl(){
@@ -188,7 +187,7 @@ class Plmgr {
                     if (fs::remove("./playlists"+playlist_name+".apl")){
                         cout<<"File deleted successfully.\nReloading playlists...\n";
                         playlists.clear();
-                        util_loadfiles();
+                        util_folder();
                         cout<<"Loaded Succesfully\nEnjoy :)\n";
                     } else {
                         cerr<<"Unable to delete the file!\n";
@@ -241,6 +240,7 @@ class Plmgr {
             }
         }
         //[4]
+        //TODO: Implement order
         void order(){
 
         }
@@ -271,6 +271,7 @@ class Plmgr {
             }
         }
         //[8]
+        //TODO: implement play
         void play(){
         }
 };

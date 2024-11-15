@@ -3,8 +3,5 @@
 
 int main(){
     Plmgr playlist_manager;
-    // program init
-    // while(true){
-        
-    // }
+    //TODO: Code the main menu
 }
