@@ -12,6 +12,7 @@ hide Node circle
 class Linked_list{
     -head: Node*
     -tail: Node*
+    -size: size_t
 
     +push_back(): void
     +pop_back(): void
